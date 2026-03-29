@@ -11,6 +11,7 @@ struct MipTexData {
     uint32_t height;
     std::vector<uint8_t> mip[4]; // Indices
     std::vector<ColorRGB> palette;
+    bool has_transparency = false;
 };
 
 class ImageProcessor {

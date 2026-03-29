@@ -20,7 +20,7 @@ static inline int ColorDist(const ColorRGB& a, const ColorRGB& b) {
     return dr*dr + dg*dg + db*db;
 }
 
-static void BuildPalette(const std::vector<ColorRGB>& pixels, std::vector<ColorRGB>& palette, bool has_transparency, const AppConfig& config) {
+static void BuildPalette(const std::vector<ColorRGB>& pixels, const std::vector<bool>& is_transparent, std::vector<ColorRGB>& palette, bool has_transparency, const AppConfig& config) {
     palette.assign(256, {0, 0, 0});
     int max_colors = has_transparency ? 255 : 256;
     if (has_transparency) {
@@ -32,7 +32,9 @@ static void BuildPalette(const std::vector<ColorRGB>& pixels, std::vector<ColorR
     {
         // Simple hash-based deduplication for initialization speed
         std::vector<uint8_t> seen(1 << 15, 0); // 32k buckets
-        for (const auto& p : pixels) {
+        for (size_t i = 0; i < pixels.size(); ++i) {
+            if (has_transparency && is_transparent[i]) continue;
+            const auto& p = pixels[i];
             uint16_t h = ((p.r >> 3) << 10) | ((p.g >> 3) << 5) | (p.b >> 3);
             if (!seen[h]) {
                 unique_colors.push_back(p);
@@ -72,7 +74,9 @@ static void BuildPalette(const std::vector<ColorRGB>& pixels, std::vector<ColorR
         std::fill(sum_b.begin(), sum_b.end(), 0);
         std::fill(counts.begin(), counts.end(), 0);
 
-        for (const auto& p : pixels) {
+        for (size_t i = 0; i < pixels.size(); ++i) {
+            if (has_transparency && is_transparent[i]) continue;
+            const auto& p = pixels[i];
             int best_idx = 0;
             int best_dist = ColorDist(p, palette[0]);
             for (int i = 1; i < max_colors; ++i) {
@@ -112,7 +116,7 @@ static int FindNearestPaletteIndex(const ColorRGB& c, const std::vector<ColorRGB
 void ImageProcessor::QuantizeAndDither(const std::vector<ColorRGB>& image_rgb, int w, int h, 
                                        bool use_dither, MipTexData& out_data, bool has_transparency,
                                        const std::vector<bool>& is_transparent, const AppConfig& config) {
-    BuildPalette(image_rgb, out_data.palette, has_transparency, config);
+    BuildPalette(image_rgb, is_transparent, out_data.palette, has_transparency, config);
     out_data.mip[0].resize(w * h);
 
     int max_pal_idx = has_transparency ? 254 : 255;
@@ -187,7 +191,7 @@ void ImageProcessor::GenerateMipmaps(MipTexData& data) {
                     for (int dx = 0; dx < 2; ++dx) {
                         if (px + dx < prev_w && py + dy < prev_h) {
                             uint8_t pal_idx = data.mip[mip-1][(py + dy) * prev_w + (px + dx)];
-                            if (pal_idx == 255) {
+                            if (data.has_transparency && pal_idx == 255) {
                                 trans_count++;
                             } else {
                                 sum_r += data.palette[pal_idx].r;
@@ -198,13 +202,15 @@ void ImageProcessor::GenerateMipmaps(MipTexData& data) {
                         }
                     }
                 }
-                if (trans_count >= 2) {
+                if (data.has_transparency && trans_count >= 2) {
                     data.mip[mip][y * cur_w + x] = 255;
                 } else if (count > 0) {
                     ColorRGB avg = { (uint8_t)(sum_r/count), (uint8_t)(sum_g/count), (uint8_t)(sum_b/count) };
-                    data.mip[mip][y * cur_w + x] = (uint8_t)FindNearestPaletteIndex(avg, data.palette, 254);
-                } else {
+                    data.mip[mip][y * cur_w + x] = (uint8_t)FindNearestPaletteIndex(avg, data.palette, data.has_transparency ? 254 : 255);
+                } else if (data.has_transparency) {
                     data.mip[mip][y * cur_w + x] = 255;
+                } else {
+                    data.mip[mip][y * cur_w + x] = 0; // Should not happen with count > 0 check
                 }
             }
         }
@@ -323,24 +329,21 @@ bool ImageProcessor::ProcessFile(const std::string& filepath, const std::string&
             int dst_idx = ((y + offset_y) * canvas_w + (x + offset_x));
             uint8_t r = resized[src_idx], g = resized[src_idx + 1], b = resized[src_idx + 2], a = resized[src_idx + 3];
             
-            if (a == 0) {
+            if (a <= 25) { // 90% or more transparent (25/255 approx 10%)
+                // Force highly transparent pixels to blue (padding color)
                 final_rgb[dst_idx] = {config.pad_r, config.pad_g, config.pad_b};
                 is_transparent[dst_idx] = true;
                 any_transparency = true;
-            } else if (a == 255) {
+            } else {
+                // Any other alpha (less than 90% transparent): treat as fully opaque original color
                 final_rgb[dst_idx] = {r, g, b};
                 is_transparent[dst_idx] = false;
-            } else {
-                float alpha = a / 255.0f;
-                final_rgb[dst_idx].r = (uint8_t)(r * alpha + config.pad_r * (1.0f - alpha));
-                final_rgb[dst_idx].g = (uint8_t)(g * alpha + config.pad_g * (1.0f - alpha));
-                final_rgb[dst_idx].b = (uint8_t)(b * alpha + config.pad_b * (1.0f - alpha));
-                is_transparent[dst_idx] = false; // Treat semi-transparent as opaque after blending
             }
         }
     }
 
     out_data.name = internal_name;
+    out_data.has_transparency = any_transparency;
     out_data.width = canvas_w;
     out_data.height = canvas_h;
 

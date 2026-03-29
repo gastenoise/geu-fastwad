@@ -78,9 +78,26 @@ ExitCode WadArchive::Build(const AppConfig& config) {
     int skipped = 0, failed = 0;
 
     for (const auto& path : files) {
+        MipTexData tex;
         std::string raw_name = path.stem().string();
         std::string norm = NormalizeName(raw_name);
-        
+
+        if (!ImageProcessor::ProcessFile(path.string(), norm, config, tex)) {
+            if (config.verbose) std::cerr << "Warn: Skipping non-image or unreadable " << path.filename() << "\n";
+            skipped++;
+            continue;
+        }
+        if (tex.width == 0) { failed++; continue; }
+
+        // If transparent, force name to start with '{'
+        if (tex.has_transparency) {
+            if (tex.name.empty() || tex.name[0] != '{') {
+                tex.name = "{" + tex.name;
+            }
+            if (tex.name.length() > 15) tex.name = tex.name.substr(0, 15);
+        }
+        norm = tex.name;
+
         // Resolve Collisions deterministically
         if (used_names.count(norm)) {
             std::string hash_hex;
@@ -104,14 +121,8 @@ ExitCode WadArchive::Build(const AppConfig& config) {
             }
         }
         used_names.insert(norm);
+        tex.name = norm;
 
-        MipTexData tex;
-        if (!ImageProcessor::ProcessFile(path.string(), norm, config, tex)) {
-            if (config.verbose) std::cerr << "Warn: Skipping non-image or unreadable " << path.filename() << "\n";
-            skipped++;
-            continue;
-        }
-        if (tex.width == 0) { failed++; continue; }
         textures.push_back(tex);
         if (config.verbose) std::cout << "Processed: " << path.filename() << " -> " << norm << "\n";
     }

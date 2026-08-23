@@ -5,6 +5,12 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release version tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+        type: string
 
 permissions:
   contents: write
@@ -17,6 +23,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Determine Version Tag
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag_name }}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="v1.0.0"
+          fi
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+
       - name: Configure CMake
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DFASTWAD_BUILD_TESTS=OFF
 
@@ -26,7 +45,7 @@ jobs:
       - name: Package Windows Release Bundle
         shell: pwsh
         run: |
-          $TAG = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { 'latest' }
+          $TAG = $env:TAG
           $DIST_DIR = "fastwad-$TAG-windows-x64"
           New-Item -ItemType Directory -Path $DIST_DIR
           Copy-Item "build/Release/fastwad.exe" "$DIST_DIR/"
@@ -49,6 +68,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Determine Version Tag
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag_name }}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="v1.0.0"
+          fi
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -62,7 +94,7 @@ jobs:
 
       - name: Package Linux Release Bundle
         run: |
-          TAG="${GITHUB_REF_NAME:-latest}"
+          TAG="${TAG:-v1.0.0}"
           DIST_DIR="fastwad-${TAG}-linux-x64"
           mkdir -p "$DIST_DIR/include/fastwad"
           cp build/fastwad "$DIST_DIR/"
@@ -84,6 +116,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Determine Release Metadata
+        id: release_meta
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag_name }}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="v1.0.0"
+          fi
+          echo "tag_name=${TAG}" >> $GITHUB_OUTPUT
+          echo "release_name=fastwad ${TAG}" >> $GITHUB_OUTPUT
+
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -93,6 +139,9 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.release_meta.outputs.tag_name }}
+          name: ${{ steps.release_meta.outputs.release_name }}
+          target_commitish: ${{ github.sha }}
           files: release-assets/*
           generate_release_notes: true
           draft: false

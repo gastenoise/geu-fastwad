@@ -233,10 +233,29 @@ ExitCode WadArchive::List(const AppConfig& config) {
         return ExitCode::FatalError; 
     }
 
+    in.seekg(0, std::ios::end);
+    size_t file_size = (size_t)in.tellg();
+    in.seekg(0, std::ios::beg);
+
+    if (file_size < sizeof(WadHeader)) {
+        if (!config.quiet) std::cerr << "Fatal: File is too small for WAD header.\n";
+        return ExitCode::FatalError;
+    }
+
     WadHeader header;
     in.read((char*)&header, sizeof(WadHeader));
     if (std::strncmp(header.signature, "WAD2", 4) != 0 && std::strncmp(header.signature, "WAD3", 4) != 0) {
         if (!config.quiet) std::cerr << "Fatal: Invalid WAD signature.\n"; 
+        return ExitCode::FatalError;
+    }
+
+    if (header.numLumps > 65536) {
+        if (!config.quiet) std::cerr << "Fatal: Corrupted WAD: lump count exceeds limit (65536).\n";
+        return ExitCode::FatalError;
+    }
+
+    if ((uint64_t)header.infoTableOffset + (uint64_t)header.numLumps * sizeof(WadDirEntry) > file_size) {
+        if (!config.quiet) std::cerr << "Fatal: Corrupted WAD: info table offset out of bounds.\n";
         return ExitCode::FatalError;
     }
 
@@ -254,7 +273,7 @@ ExitCode WadArchive::List(const AppConfig& config) {
     for (const auto& dir : directory) {
         ParsedLump pl;
         pl.dir = dir;
-        if (dir.type == 0x43) {
+        if (dir.type == 0x43 && (uint64_t)dir.offset + sizeof(MipTexHeader) <= file_size) {
             pl.is_miptex = true;
             in.seekg(dir.offset);
             in.read((char*)&pl.mhead, sizeof(MipTexHeader));
@@ -323,6 +342,15 @@ ExitCode WadArchive::Extract(const AppConfig& config) {
         return ExitCode::FatalError; 
     }
 
+    in.seekg(0, std::ios::end);
+    size_t file_size = (size_t)in.tellg();
+    in.seekg(0, std::ios::beg);
+
+    if (file_size < sizeof(WadHeader)) {
+        if (!config.quiet) std::cerr << "Fatal: File is too small for WAD header.\n";
+        return ExitCode::FatalError;
+    }
+
     if (!fs::exists(config.output_path)) {
         fs::create_directories(config.output_path);
     }
@@ -331,6 +359,16 @@ ExitCode WadArchive::Extract(const AppConfig& config) {
     in.read((char*)&header, sizeof(WadHeader));
     if (std::strncmp(header.signature, "WAD2", 4) != 0 && std::strncmp(header.signature, "WAD3", 4) != 0) {
         if (!config.quiet) std::cerr << "Fatal: Invalid WAD signature.\n"; 
+        return ExitCode::FatalError;
+    }
+
+    if (header.numLumps > 65536) {
+        if (!config.quiet) std::cerr << "Fatal: Corrupted WAD: lump count exceeds limit (65536).\n";
+        return ExitCode::FatalError;
+    }
+
+    if ((uint64_t)header.infoTableOffset + (uint64_t)header.numLumps * sizeof(WadDirEntry) > file_size) {
+        if (!config.quiet) std::cerr << "Fatal: Corrupted WAD: info table offset out of bounds.\n";
         return ExitCode::FatalError;
     }
 
@@ -351,9 +389,14 @@ ExitCode WadArchive::Extract(const AppConfig& config) {
 
     for (const auto& dir : directory) {
         if (dir.type != 0x43) continue;
+        if ((uint64_t)dir.offset + sizeof(MipTexHeader) > file_size) continue;
+
         in.seekg(dir.offset);
         MipTexHeader mhead;
         in.read((char*)&mhead, sizeof(MipTexHeader));
+
+        if (mhead.width == 0 || mhead.height == 0 || mhead.width > 4096 || mhead.height > 4096) continue;
+        if (mhead.width % 16 != 0 || mhead.height % 16 != 0) continue;
 
         MipTexData tex;
         tex.width = mhead.width;
@@ -362,13 +405,17 @@ ExitCode WadArchive::Extract(const AppConfig& config) {
         std::memcpy(clean_name, mhead.name, 16);
         tex.name = clean_name;
         
+        if ((uint64_t)dir.offset + mhead.offsets[0] + (uint64_t)tex.width * tex.height > file_size) continue;
+
         in.seekg(dir.offset + mhead.offsets[0]);
         tex.mip[0].resize(tex.width * tex.height);
         in.read((char*)tex.mip[0].data(), tex.mip[0].size());
 
         uint32_t last_mip_size = (tex.width / 8) * (tex.height / 8);
-        in.seekg(dir.offset + mhead.offsets[3] + last_mip_size);
+        uint64_t pal_start = (uint64_t)dir.offset + mhead.offsets[3] + last_mip_size;
+        if (pal_start + 2 + 768 > file_size) continue;
 
+        in.seekg(pal_start);
         uint16_t palSize = 0;
         in.read((char*)&palSize, sizeof(uint16_t));
         if (palSize == 0) palSize = 256;
@@ -491,7 +538,12 @@ std::optional<std::vector<MipTex>> UnpackWadFromMemory(const uint8_t* wad_data, 
         return std::nullopt;
     }
 
-    if (header.infoTableOffset + header.numLumps * sizeof(WadDirEntry) > size) {
+    if (header.numLumps > 65536) {
+        if (error_msg) *error_msg = "Lump count exceeds maximum safe limit (65536).";
+        return std::nullopt;
+    }
+
+    if ((uint64_t)header.infoTableOffset + (uint64_t)header.numLumps * sizeof(WadDirEntry) > size) {
         if (error_msg) *error_msg = "Corrupted lump directory offset.";
         return std::nullopt;
     }
@@ -502,10 +554,13 @@ std::optional<std::vector<MipTex>> UnpackWadFromMemory(const uint8_t* wad_data, 
     std::vector<MipTex> textures;
     for (const auto& dir : directory) {
         if (dir.type != 0x43) continue;
-        if (dir.offset + sizeof(MipTexHeader) > size) continue;
+        if ((uint64_t)dir.offset + sizeof(MipTexHeader) > size) continue;
 
         MipTexHeader mhead;
         std::memcpy(&mhead, wad_data + dir.offset, sizeof(MipTexHeader));
+
+        if (mhead.width == 0 || mhead.height == 0 || mhead.width > 4096 || mhead.height > 4096) continue;
+        if (mhead.width % 16 != 0 || mhead.height % 16 != 0) continue;
 
         MipTex tex;
         char name_buf[17] = {0};
@@ -519,14 +574,14 @@ std::optional<std::vector<MipTex>> UnpackWadFromMemory(const uint8_t* wad_data, 
             uint32_t mip_w = std::max(1u, tex.width >> i);
             uint32_t mip_h = std::max(1u, tex.height >> i);
             size_t mip_len = mip_w * mip_h;
-            if (dir.offset + mhead.offsets[i] + mip_len <= size) {
+            if ((uint64_t)dir.offset + mhead.offsets[i] + mip_len <= size) {
                 tex.mip[i].resize(mip_len);
                 std::memcpy(tex.mip[i].data(), wad_data + dir.offset + mhead.offsets[i], mip_len);
             }
         }
 
         uint32_t last_mip_size = (tex.width / 8) * (tex.height / 8);
-        size_t pal_start = dir.offset + mhead.offsets[3] + last_mip_size;
+        size_t pal_start = (size_t)dir.offset + mhead.offsets[3] + last_mip_size;
         if (pal_start + 2 + 768 <= size) {
             uint16_t palSize = 256;
             std::memcpy(&palSize, wad_data + pal_start, sizeof(uint16_t));
@@ -552,7 +607,12 @@ std::optional<WadInfo> InspectWadFromMemory(const uint8_t* wad_data, size_t size
         return std::nullopt;
     }
 
-    if (header.infoTableOffset + header.numLumps * sizeof(WadDirEntry) > size) {
+    if (header.numLumps > 65536) {
+        if (error_msg) *error_msg = "Lump count exceeds maximum safe limit (65536).";
+        return std::nullopt;
+    }
+
+    if ((uint64_t)header.infoTableOffset + (uint64_t)header.numLumps * sizeof(WadDirEntry) > size) {
         if (error_msg) *error_msg = "Corrupted lump directory offset.";
         return std::nullopt;
     }

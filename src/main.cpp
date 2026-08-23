@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
         CommandLineParser::PrintHelp();
         return (int)ExitCode::Success;
     }
-    if (first_arg == "--version" || first_arg == "-v" && argc == 2) {
+    if (first_arg == "--version" || (first_arg == "-v" && argc == 2)) {
         std::cout << "fastwad version 1.0.0\n";
         return (int)ExitCode::Success;
     }

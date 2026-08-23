@@ -16,8 +16,6 @@ jobs:
         include:
           - name: "Windows (MSVC)"
             os: windows-latest
-            c_compiler: cl
-            cxx_compiler: cl
             build_type: Release
 
           - name: "Linux (GCC)"
@@ -42,10 +40,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y cmake build-essential ninja-build
 
-      - name: Configure CMake
+      - name: Configure CMake (Linux)
+        if: runner.os == 'Linux'
         env:
           CC: ${{ matrix.c_compiler }}
           CXX: ${{ matrix.cxx_compiler }}
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DFASTWAD_BUILD_TESTS=ON
+
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \

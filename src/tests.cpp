@@ -17,6 +17,7 @@
 #include <cstring>
 #include <iomanip>
 #include <cstdlib>
+#include <algorithm>
 
 namespace fs = std::filesystem;
 using namespace fastwad;

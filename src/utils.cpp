@@ -9,7 +9,7 @@
 
 namespace fs = std::filesystem;
 
-namespace utils {
+namespace fastwad::utils {
 
 std::string Deaccent(const std::string& str) {
     struct Mapping { const char* from; const char* to; };
@@ -68,4 +68,4 @@ FILE* OpenFilePortable(const std::string& path, const char* mode) {
 #endif
 }
 
-} // namespace utils
+} // namespace fastwad::utils

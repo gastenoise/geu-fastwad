@@ -1,11 +1,24 @@
 #include "cli.hpp"
 #include "wad_archive.hpp"
 #include <filesystem>
+#include <iostream>
+
+using namespace fastwad;
 
 int main(int argc, char** argv) {
     if (argc < 2) {
         CommandLineParser::PrintHelp();
         return (int)ExitCode::CliError;
+    }
+
+    std::string first_arg = argv[1];
+    if (first_arg == "--help" || first_arg == "-h" || first_arg == "help") {
+        CommandLineParser::PrintHelp();
+        return (int)ExitCode::Success;
+    }
+    if (first_arg == "--version" || first_arg == "-v" && argc == 2) {
+        std::cout << "fastwad version 1.0.0\n";
+        return (int)ExitCode::Success;
     }
 
     AppConfig config = CommandLineParser::Parse(argc, argv);

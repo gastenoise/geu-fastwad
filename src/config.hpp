@@ -1,15 +1,18 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <cstdint>
 
 #define DEFAULT_CONFIG_FILE "fastwad.conf"
 
+namespace fastwad {
+
 enum class ExitCode : int {
     Success = 0,
     PartialSuccess = 1, // Warnings or some files failed but archive created
-    FatalError = 2,    // IO errors, invalid WAD, etc.
-    CliError = 3       // Invalid arguments
+    FatalError = 2,     // IO errors, invalid WAD, etc.
+    CliError = 3        // Invalid arguments
 };
 
 struct AppConfig {
@@ -23,7 +26,7 @@ struct AppConfig {
     bool allow_overwrite = false;
     bool disable_dither = false;
     int max_size = 256;           // 256, 512, 1024
-    std::string align = "center"; // center, top, bottom, left, right
+    std::string align = "center"; // center, top, bottom, left, right, top-left, etc.
     uint8_t pad_r = 0;
     uint8_t pad_g = 0;
     uint8_t pad_b = 255;
@@ -32,7 +35,10 @@ struct AppConfig {
     // Extract options
     bool extract_bmp = false;     // Default is PNG
 
-    // General
+    // General & Low-Level output options
     bool verbose = false;
     bool quiet = false;
+    bool json_output = false;     // Output structured JSON for machine consumption
 };
+
+} // namespace fastwad

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "config.hpp"
 #include <iostream>
 #include <fstream>
@@ -7,20 +8,28 @@
 #include <vector>
 #include <algorithm>
 
+namespace fastwad {
+
 class CommandLineParser {
 public:
     static AppConfig Parse(int argc, char** argv) {
         AppConfig config;
         std::map<std::string, std::string> args;
         
-        // Load default config file first
+        // Load default config file first if it exists
         LoadConfigFile(DEFAULT_CONFIG_FILE, args);
 
         std::vector<std::string> positional;
 
         for (int i = 1; i < argc; ++i) {
             std::string arg = argv[i];
-            if (arg.find("--save-config=") == 0) {
+            if (arg == "--json") {
+                args["json"] = "true";
+            } else if (arg == "--quiet" || arg == "-q") {
+                args["quiet"] = "true";
+            } else if (arg == "--verbose" || arg == "-v") {
+                args["verbose"] = "true";
+            } else if (arg.find("--save-config=") == 0) {
                 config.config_file_to_save = arg.substr(14);
             } else if (arg.find("config=") == 0) {
                 LoadConfigFile(arg.substr(7), args);
@@ -54,6 +63,7 @@ public:
             if (m.count("format")) config.extract_bmp = (m.at("format") == "bmp");
             if (m.count("verbose")) config.verbose = (m.at("verbose") == "true");
             if (m.count("quiet")) config.quiet = (m.at("quiet") == "true");
+            if (m.count("json")) config.json_output = (m.at("json") == "true");
             if (m.count("stretch")) config.stretch = (m.at("stretch") == "true");
             if (m.count("pad_r")) config.pad_r = (uint8_t)std::stoi(m.at("pad_r"));
             if (m.count("pad_g")) config.pad_g = (uint8_t)std::stoi(m.at("pad_g"));
@@ -70,32 +80,33 @@ public:
     }
 
     static void PrintHelp() {
-        std::cout << "fastWAD - GoldSrc WAD Archive Builder\n\n"
-                  << "Commands:\n"
-                  << "  build <input_dir> <output.wad> [options]\n"
-                  << "  list <input.wad>\n"
-                  << "  extract <input.wad> <output_dir> [options]\n"
-                  << "  save-config [options]   Save current settings to " << DEFAULT_CONFIG_FILE << "\n"
-                  << "  reset-config            Delete the " << DEFAULT_CONFIG_FILE << " file\n\n"
-                  << "Options (Key=Value format):\n"
-                  << "  config=<path>           Load settings from text file (loads " << DEFAULT_CONFIG_FILE << " by default if present)\n"
-                  << "  --save-config=<path>    Save current CLI settings to a file\n"
-                  << "  wad2=true               Generate WAD2 instead of WAD3 (default: false)\n"
+        std::cout << "fastwad - GoldSrc & Quake WAD Archive Builder & SDK\n\n"
+                  << "Usage:\n"
+                  << "  fastwad build <input_dir> <output.wad> [options]\n"
+                  << "  fastwad list <input.wad> [options]\n"
+                  << "  fastwad extract <input.wad> <output_dir> [options]\n"
+                  << "  fastwad save-config [options]\n"
+                  << "  fastwad reset-config\n\n"
+                  << "Options:\n"
+                  << "  --json                  Output structured machine-readable JSON to stdout\n"
+                  << "  wad2=true               Generate WAD2 (Quake 1) instead of WAD3 (Half-Life)\n"
                   << "  allow_overwrite=true    Overwrite existing output file (default: false)\n"
-                  << "  disable_dither=true     Disable Floyd-Steinberg dithering (default: false)\n"
-                  << "  max_size=512            Max texture bound: 256, 512, 1024 (default: 256)\n"
-                  << "  align=center            Padding align: center, top, bottom, left, right (default: center)\n"
-                  << "  stretch=true            Stretch to fill max_size (default: false)\n"
-                  << "  pad_r=0, pad_g=0, pad_b=255  Padding/Transparency color (default: 0 0 255)\n"
-                  << "  format=bmp              Extract format: png or bmp (default: png)\n"
-                  << "  verbose=true            Enable verbose logging\n"
-                  << "  quiet=true              Suppress standard output\n";
+                  << "  disable_dither=true     Disable Floyd-Steinberg dithering\n"
+                  << "  max_size=512            Max texture dimension: 256, 512, 1024 (default: 256)\n"
+                  << "  align=center            Padding alignment: center, top, bottom, left, right\n"
+                  << "  stretch=true            Stretch to max_size instead of aspect contain\n"
+                  << "  pad_r=0 pad_g=0 pad_b=255 Padding/transparency key color (default: 0 0 255)\n"
+                  << "  format=bmp              Extraction image format: png or bmp (default: png)\n"
+                  << "  config=<path>           Load settings from a specific configuration file\n"
+                  << "  --save-config=<path>    Export current CLI settings to a file\n"
+                  << "  verbose=true, -v        Enable verbose diagnostic logging (on stderr)\n"
+                  << "  quiet=true, -q          Suppress standard non-JSON output\n";
     }
 
     static void SaveConfigFile(const std::string& path, const AppConfig& config) {
         std::ofstream out(path);
         if (!out) return;
-        out << "# fastWAD configuration\n"
+        out << "# fastwad configuration\n"
             << "wad2=" << (config.wad2 ? "true" : "false") << "\n"
             << "allow_overwrite=" << (config.allow_overwrite ? "true" : "false") << "\n"
             << "disable_dither=" << (config.disable_dither ? "true" : "false") << "\n"
@@ -125,3 +136,5 @@ private:
         }
     }
 };
+
+} // namespace fastwad

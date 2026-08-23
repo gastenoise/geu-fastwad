@@ -1,7 +1,13 @@
 #pragma once
+
 #include "config.hpp"
 #include "image_processor.hpp"
+#include "fastwad/fastwad.hpp"
 #include <vector>
+#include <string>
+#include <optional>
+
+namespace fastwad {
 
 class WadArchive {
 public:
@@ -9,6 +15,7 @@ public:
     static ExitCode List(const AppConfig& config);
     static ExitCode Extract(const AppConfig& config);
 
-private:
     static std::string NormalizeName(const std::string& raw);
 };
+
+} // namespace fastwad

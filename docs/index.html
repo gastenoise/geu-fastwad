@@ -46,24 +46,12 @@
          ======================================================================= -->
     <section class="doc-section">
       <h1>fastwad</h1>
-      <p>
-        Deterministic, high-performance C++ engine and CLI utility for compiling, inspecting, and extracting GoldSrc (Half-Life 1, Counter-Strike 1.6) and Quake (WAD2/WAD3) texture archives.
+      <p style="margin-bottom: 0.75rem;">
+        <strong>fastwad</strong> is a modern, deterministic C++ engine and CLI utility designed for compiling, inspecting, and extracting GoldSrc (Half-Life 1, Counter-Strike 1.6) and Quake (WAD2/WAD3) texture archives. It delivers byte-level reproducible builds across Windows and Linux, high-fidelity 256-color K-Means++ quantization, Floyd-Steinberg spatial error diffusion dithering, and automatic 4-level spatial mipmap downsampling.
       </p>
-
-      <div class="doc-grid-3">
-        <div class="doc-card">
-          <strong style="color:#fff; display:block; margin-bottom:4px;">⚡ Bit-for-Bit Deterministic</strong>
-          <p>Identical inputs and options always produce exact bit-for-bit identical binary WAD archives across platforms.</p>
-        </div>
-        <div class="doc-card">
-          <strong style="color:#fff; display:block; margin-bottom:4px;">🎨 High-Fidelity Color Engine</strong>
-          <p>K-Means++ 256-color clustering, Floyd-Steinberg dithering, 4-level spatial mipmaps, and GoldSrc alpha mask mapping.</p>
-        </div>
-        <div class="doc-card">
-          <strong style="color:#fff; display:block; margin-bottom:4px;">🔧 Native & Embeddable</strong>
-          <p>Zero-dependency offline builds, low-level machine-readable <code>--json</code> mode, and single-header C++17 SDK.</p>
-        </div>
-      </div>
+      <p>
+        Built with zero external runtime dependencies, fastwad provides intelligent 16-pixel dimension snapping with smart 2px micro-stretch heuristics, GoldSrc special lump prefix preservation (<code class="text-sky">{</code>, <code class="text-amber">!</code>, <code class="text-emerald">+</code>, <code class="text-rose">~</code>), machine-readable <code class="text-emerald">--json</code> output for tooling pipelines (TrenchBroom, J.A.C.K., Hammer, CI/CD), and an embeddable C++17 single-header SDK (<code class="text-sky">&lt;fastwad/fastwad.hpp&gt;</code>) for in-memory packing, unpacking, and inspection.
+      </p>
     </section>
 
     <!-- =======================================================================
@@ -195,7 +183,7 @@
         <span class="brand-badge text-emerald">Automated on main</span>
       </div>
 
-      <div class="doc-grid-2">
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
         <!-- Sample 1: Gradient Skybox -->
         <div class="doc-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">

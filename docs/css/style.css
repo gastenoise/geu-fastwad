@@ -100,7 +100,8 @@ nav a {
   transition: color 0.15s ease-in-out;
 }
 
-nav a:hover {
+nav a:hover,
+nav a.nav-highlight {
   color: #fff;
 }
 
@@ -110,6 +111,10 @@ nav a:hover {
 .doc-section {
   padding: 2.25rem 0;
   border-bottom: 1px solid var(--border);
+}
+
+.doc-section:last-of-type {
+  border-bottom: none;
 }
 
 h1 {
@@ -132,6 +137,10 @@ p {
   color: var(--text-muted);
   font-size: 14px;
   line-height: 1.6;
+}
+
+p.p-intro {
+  margin-bottom: 0.75rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -183,6 +192,16 @@ p {
 
 .doc-card:hover {
   border-color: #3f3f46;
+}
+
+.card-highlight {
+  border-color: var(--accent-sky);
+}
+
+.card-title {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 /* --------------------------------------------------------------------------
@@ -247,6 +266,21 @@ p {
   border-color: #52525b;
 }
 
+.field-label {
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.bg-card {
+  background: var(--bg-card);
+}
+
 /* --------------------------------------------------------------------------
    7. IDE Code Editor Boxes & Tabs
    -------------------------------------------------------------------------- */
@@ -265,6 +299,15 @@ p {
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
+}
+
+.editor-title {
+  color: #fff;
+  font-weight: bold;
+}
+
+.editor-subtitle {
+  color: var(--text-muted);
 }
 
 .tab-btn {
@@ -307,8 +350,149 @@ pre {
 }
 
 /* --------------------------------------------------------------------------
-   8. Reference Tables & Pixel Rendering
+   8. Live Visual Showcase Gallery (Faithful Reproduction of 62f89ca)
    -------------------------------------------------------------------------- */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 640px) {
+  .showcase-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.showcase-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: border-color 0.15s ease;
+}
+
+.showcase-card:hover {
+  border-color: #3f3f46;
+}
+
+.showcase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.showcase-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.showcase-badge {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--text-muted);
+  background: var(--bg-main);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.showcase-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.showcase-diff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.75rem;
+  text-align: center;
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.showcase-diff-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.showcase-diff-label {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.showcase-diff-label.highlight {
+  color: var(--accent-sky);
+  font-weight: 600;
+}
+
+.showcase-img-frame {
+  aspect-ratio: 1 / 1;
+  background: var(--bg-main);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.showcase-img-frame.highlight {
+  border-color: rgba(14, 165, 233, 0.45);
+}
+
+.showcase-img-frame img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 3px;
+}
+
+.showcase-mipmaps {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.showcase-mip-label {
+  font-size: 11px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.showcase-mip-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  background: var(--bg-main);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.showcase-mip-0 { height: 44px; border: 1px solid var(--border); border-radius: 3px; }
+.showcase-mip-1 { height: 32px; border: 1px solid var(--border); border-radius: 3px; }
+.showcase-mip-2 { height: 22px; border: 1px solid var(--border); border-radius: 3px; }
+.showcase-mip-3 { height: 14px; border: 1px solid var(--border); border-radius: 3px; }
+
+/* --------------------------------------------------------------------------
+   9. Reference Tables & Quickstart Integration
+   -------------------------------------------------------------------------- */
+.quickstart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
 .table-ref {
   width: 100%;
   border-collapse: collapse;
@@ -335,7 +519,42 @@ pre {
 }
 
 /* --------------------------------------------------------------------------
-   9. Color Utility Classes
+   10. Layout Utility Helpers
+   -------------------------------------------------------------------------- */
+.flex-between-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.flex-center-vert {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flex-row-gap {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mb-sm { margin-bottom: 0.5rem; }
+.mb-md { margin-bottom: 1rem; }
+.mt-xs { margin-top: 2px; }
+
+.doc-footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   11. Color Utility Classes
    -------------------------------------------------------------------------- */
 .text-emerald { color: var(--accent-emerald); }
 .text-cyan    { color: var(--accent-cyan); }
@@ -343,3 +562,6 @@ pre {
 .text-rose    { color: var(--accent-rose); }
 .text-indigo  { color: var(--accent-indigo); }
 .text-sky     { color: var(--accent-sky); }
+.text-white   { color: #fff; }
+.text-muted   { color: var(--text-muted); }
+.font-bold    { font-weight: bold; }

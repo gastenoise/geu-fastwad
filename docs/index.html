@@ -31,7 +31,7 @@
         <a href="#quickstart">Quickstart</a>
         <a href="#sdk">C++ SDK</a>
         <a href="#reference">Reference</a>
-        <a href="https://github.com/urgorri/fastwad" target="_blank" rel="noopener" style="color:#fff;">GitHub ↗</a>
+        <a href="https://github.com/urgorri/fastwad" target="_blank" rel="noopener" class="nav-highlight">GitHub ↗</a>
       </nav>
     </div>
   </header>
@@ -46,7 +46,7 @@
          ======================================================================= -->
     <section class="doc-section">
       <h1>fastwad</h1>
-      <p style="margin-bottom: 0.75rem;">
+      <p class="p-intro">
         <strong>fastwad</strong> is a modern, deterministic C++ engine and CLI utility designed for compiling, inspecting, and extracting GoldSrc (Half-Life 1, Counter-Strike 1.6) and Quake (WAD2/WAD3) texture archives. It delivers byte-level reproducible builds across Windows and Linux, high-fidelity 256-color K-Means++ quantization, Floyd-Steinberg spatial error diffusion dithering, and automatic 4-level spatial mipmap downsampling.
       </p>
       <p>
@@ -58,7 +58,7 @@
          3. LIVE PLAYGROUND & INTERACTIVE BUILDER
          ======================================================================= -->
     <section id="playground" class="doc-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+      <div class="flex-between-wrap">
         <h2>Interactive Playground & CLI Builder</h2>
         <div>
           <button @click="json = !json; update()" :class="json ? 'doc-btn-emerald' : 'doc-btn'" class="doc-btn">
@@ -68,11 +68,11 @@
       </div>
 
       <!-- Controls Card -->
-      <div class="doc-card" style="margin-bottom:1rem;">
+      <div class="doc-card mb-md">
         <div class="doc-grid-4">
           <div>
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Command Action</label>
-            <select x-model="action" @change="update()" class="doc-input-field" style="cursor:pointer;">
+            <label class="field-label">Command Action</label>
+            <select x-model="action" @change="update()" class="doc-input-field cursor-pointer">
               <option value="build">build (Directory -> WAD)</option>
               <option value="list">list (Inspect WAD)</option>
               <option value="extract">extract (WAD -> Images)</option>
@@ -80,16 +80,16 @@
           </div>
 
           <div>
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Format Target</label>
-            <select x-model="wad2" @change="update()" class="doc-input-field" style="cursor:pointer;">
+            <label class="field-label">Format Target</label>
+            <select x-model="wad2" @change="update()" class="doc-input-field cursor-pointer">
               <option :value="false">WAD3 (Half-Life 1 / GoldSrc)</option>
               <option :value="true">WAD2 (Quake 1)</option>
             </select>
           </div>
 
           <div>
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Max Texture Dimension</label>
-            <select x-model="maxSize" @change="update()" class="doc-input-field" style="cursor:pointer;">
+            <label class="field-label">Max Texture Dimension</label>
+            <select x-model="maxSize" @change="update()" class="doc-input-field cursor-pointer">
               <option value="256">256 px (Standard)</option>
               <option value="512">512 px (High-Res)</option>
               <option value="1024">1024 px (Ultra)</option>
@@ -97,8 +97,8 @@
           </div>
 
           <div>
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Floyd-Steinberg Dithering</label>
-            <button @click="disableDither = !disableDither; update()" class="doc-input-field" style="text-align:left; cursor:pointer; background:var(--bg-card);">
+            <label class="field-label">Floyd-Steinberg Dithering</label>
+            <button @click="disableDither = !disableDither; update()" class="doc-input-field cursor-pointer bg-card">
               Dithering: <span :class="!disableDither ? 'text-emerald' : 'text-amber'" x-text="!disableDither ? 'Enabled' : 'Disabled'"></span>
             </button>
           </div>
@@ -106,33 +106,33 @@
       </div>
 
       <!-- Live Dimension & Snapping Engine Card -->
-      <div class="doc-card" style="margin-bottom:1rem; border-color:var(--accent-sky);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-          <strong style="color:#fff; font-size:13px;">Live Dimension Snapping & GoldSrc Normalization Engine</strong>
+      <div class="doc-card card-highlight mb-md">
+        <div class="flex-between-wrap mb-sm">
+          <strong class="card-title">Live Dimension Snapping & GoldSrc Normalization Engine</strong>
           <span class="brand-badge text-sky">Smart 2px Micro-Stretch</span>
         </div>
 
         <div class="doc-grid-3">
           <div>
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Input Dimensions (W x H)</label>
-            <div style="display:flex; gap:0.5rem;">
+            <label class="field-label">Input Dimensions (W x H)</label>
+            <div class="flex-row-gap">
               <input type="number" x-model="testWidth" @input="update()" class="doc-input-field" placeholder="33" />
               <input type="number" x-model="testHeight" @input="update()" class="doc-input-field" placeholder="33" />
             </div>
           </div>
 
           <div>
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Raw Source Name</label>
+            <label class="field-label">Raw Source Name</label>
             <input type="text" x-model="testRawName" @input="update()" class="doc-input-field" placeholder="{Glass_01!" />
           </div>
 
-          <div style="display:flex; flex-direction:column; justify-content:center;">
-            <label style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">Snapping Calculation</label>
-            <div style="font-size:12px;">
+          <div class="flex-center-vert">
+            <label class="field-label">Snapping Calculation</label>
+            <div class="showcase-desc">
               Canvas: <strong class="text-emerald" x-text="dimResult.canvasW + 'x' + dimResult.canvasH"></strong> | 
               Mode: <span class="text-cyan" x-text="dimResult.mode"></span>
             </div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+            <div class="showcase-mip-label mt-xs">
               Lump Name: <code class="text-amber" x-text="normalizedName"></code>
             </div>
           </div>
@@ -144,10 +144,8 @@
         <!-- Input & Options Summary Box -->
         <div class="editor-box">
           <div class="editor-header">
-            <div>
-              <span style="color:#fff; font-weight:bold;">Active Configuration</span>
-            </div>
-            <span style="color:var(--text-muted);">Settings Profile</span>
+            <span class="editor-title">Active Configuration</span>
+            <span class="editor-subtitle">Settings Profile</span>
           </div>
           <div>
             <pre><code class="text-cyan" x-text="JSON.stringify(configJson, null, 2)"></code></pre>
@@ -161,7 +159,7 @@
               <button @click="outputTab = 'cli'" :class="{ 'active': outputTab === 'cli' }" class="tab-btn">Generated CLI</button>
               <button @click="outputTab = 'sdk'" :class="{ 'active': outputTab === 'sdk' }" class="tab-btn">C++17 SDK</button>
             </div>
-            <span style="color:var(--text-muted);" x-text="outputTab === 'cli' ? 'Terminal Command' : 'C++ Code'"></span>
+            <span class="editor-subtitle" x-text="outputTab === 'cli' ? 'Terminal Command' : 'C++ Code'"></span>
           </div>
           <div>
             <pre x-show="outputTab === 'cli'"><code class="text-emerald" x-text="cliCommand"></code></pre>
@@ -175,7 +173,7 @@
          4. VISUAL CAPABILITY SHOWCASE SECTION
          ======================================================================= -->
     <section id="showcase" class="doc-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+      <div class="flex-between-wrap">
         <div>
           <h2>Live Visual Capability Showcase</h2>
           <p>Generated automatically on CI builds validating 256-color quantization, spatial dithering, alpha cutouts, and 4 mip levels.</p>
@@ -183,142 +181,169 @@
         <span class="brand-badge text-emerald">Automated on main</span>
       </div>
 
-      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <!-- Showcase Grid: Faithfully matching 62f89ca layout -->
+      <div class="showcase-grid">
+
         <!-- Sample 1: Gradient Skybox -->
-        <div class="doc-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-            <strong style="color:#fff;">Gradient Skybox</strong>
-            <span style="font-size:11px; color:var(--text-muted);">256x128 | 24-bit to 8-bit</span>
+        <div class="showcase-card">
+          <div class="showcase-header">
+            <h3 class="showcase-title">Gradient Skybox</h3>
+            <span class="showcase-badge">256x128 | 24-bit to 8-bit</span>
           </div>
-          <p style="font-size:12px; margin-bottom:0.75rem;">Testing K-Means++ clustering on smooth RGB transitions with Floyd-Steinberg error diffusion.</p>
+          <p class="showcase-desc">Testing K-Means++ clustering on smooth RGB transitions with Floyd-Steinberg error diffusion.</p>
           
-          <div class="doc-grid-3" style="text-align:center; font-size:11px; margin-bottom:0.75rem;">
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">Original (24-bit)</span>
-              <img src="assets/gradient_sky_orig.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+          <div class="showcase-diff-grid">
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">Original (24-bit)</span>
+              <div class="showcase-img-frame">
+                <img src="assets/gradient_sky_orig.png" class="pixelated" alt="Gradient Skybox Original" />
+              </div>
             </div>
-            <div>
-              <span class="text-sky" style="display:block; margin-bottom:4px;">fastwad Dithered</span>
-              <img src="assets/gradient_sky_dither.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid rgba(14, 165, 233, 0.4);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label highlight">fastwad (Dithered)</span>
+              <div class="showcase-img-frame highlight">
+                <img src="assets/gradient_sky_dither.png" class="pixelated" alt="Gradient Skybox Dithered" />
+              </div>
             </div>
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">256-Color Palette</span>
-              <img src="assets/gradient_sky_palette.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">256-Color Palette</span>
+              <div class="showcase-img-frame">
+                <img src="assets/gradient_sky_palette.png" class="pixelated" alt="Gradient Skybox Palette" title="16x16 256-color palette" />
+              </div>
             </div>
           </div>
 
-          <div style="border-top:1px solid var(--border); padding-top:0.5rem; font-size:11px; color:var(--text-muted);">
-            <span style="display:block; margin-bottom:4px;">Mipmaps (100% &rarr; 50% &rarr; 25% &rarr; 12.5%):</span>
-            <div style="display:flex; align-items:flex-end; gap:6px; background:var(--bg-main); padding:6px; border-radius:4px;">
-              <img src="assets/gradient_sky_mip0.png" class="pixelated" style="height:36px; border:1px solid var(--border);" title="Mip 0" />
-              <img src="assets/gradient_sky_mip1.png" class="pixelated" style="height:27px; border:1px solid var(--border);" title="Mip 1" />
-              <img src="assets/gradient_sky_mip2.png" class="pixelated" style="height:18px; border:1px solid var(--border);" title="Mip 2" />
-              <img src="assets/gradient_sky_mip3.png" class="pixelated" style="height:10px; border:1px solid var(--border);" title="Mip 3" />
+          <div class="showcase-mipmaps">
+            <div class="showcase-mip-label">Mipmap Hierarchy (100% -> 50% -> 25% -> 12.5%):</div>
+            <div class="showcase-mip-strip">
+              <img src="assets/gradient_sky_mip0.png" class="pixelated showcase-mip-0" title="Mip 0" alt="Mip 0" />
+              <img src="assets/gradient_sky_mip1.png" class="pixelated showcase-mip-1" title="Mip 1" alt="Mip 1" />
+              <img src="assets/gradient_sky_mip2.png" class="pixelated showcase-mip-2" title="Mip 2" alt="Mip 2" />
+              <img src="assets/gradient_sky_mip3.png" class="pixelated showcase-mip-3" title="Mip 3" alt="Mip 3" />
             </div>
           </div>
         </div>
 
         <!-- Sample 2: Transparent Chainlink Fence -->
-        <div class="doc-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-            <strong style="color:#fff;">{Chainlink Fence</strong>
-            <span style="font-size:11px; color:var(--text-muted);">Wire Texture | Transparent Cutout</span>
+        <div class="showcase-card">
+          <div class="showcase-header">
+            <h3 class="showcase-title">{Chainlink Fence</h3>
+            <span class="showcase-badge">Wire Texture | Transparent Cutout</span>
           </div>
-          <p style="font-size:12px; margin-bottom:0.75rem;">Real chainlink wire texture with alpha channel mapping to GoldSrc key color (RGB 0,0,255) and palette index 255.</p>
+          <p class="showcase-desc">Real chainlink wire texture with alpha channel mapping to GoldSrc key color (RGB 0,0,255) and palette index 255.</p>
           
-          <div class="doc-grid-3" style="text-align:center; font-size:11px; margin-bottom:0.75rem;">
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">Original (RGBA)</span>
-              <img src="assets/metal_grate_orig.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+          <div class="showcase-diff-grid">
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">Original (RGBA)</span>
+              <div class="showcase-img-frame">
+                <img src="assets/metal_grate_orig.png" class="pixelated" alt="Chainlink Fence Original" />
+              </div>
             </div>
-            <div>
-              <span class="text-sky" style="display:block; margin-bottom:4px;">fastwad Dithered</span>
-              <img src="assets/metal_grate_dither.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid rgba(14, 165, 233, 0.4);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label highlight">fastwad (Dithered)</span>
+              <div class="showcase-img-frame highlight">
+                <img src="assets/metal_grate_dither.png" class="pixelated" alt="Chainlink Fence Dithered" />
+              </div>
             </div>
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">256-Color Palette</span>
-              <img src="assets/metal_grate_palette.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">256-Color Palette</span>
+              <div class="showcase-img-frame">
+                <img src="assets/metal_grate_palette.png" class="pixelated" alt="Chainlink Fence Palette" title="16x16 256-color palette" />
+              </div>
             </div>
           </div>
 
-          <div style="border-top:1px solid var(--border); padding-top:0.5rem; font-size:11px; color:var(--text-muted);">
-            <span style="display:block; margin-bottom:4px;">Mipmaps (100% &rarr; 50% &rarr; 25% &rarr; 12.5%):</span>
-            <div style="display:flex; align-items:flex-end; gap:6px; background:var(--bg-main); padding:6px; border-radius:4px;">
-              <img src="assets/metal_grate_mip0.png" class="pixelated" style="height:36px; border:1px solid var(--border);" title="Mip 0" />
-              <img src="assets/metal_grate_mip1.png" class="pixelated" style="height:27px; border:1px solid var(--border);" title="Mip 1" />
-              <img src="assets/metal_grate_mip2.png" class="pixelated" style="height:18px; border:1px solid var(--border);" title="Mip 2" />
-              <img src="assets/metal_grate_mip3.png" class="pixelated" style="height:10px; border:1px solid var(--border);" title="Mip 3" />
+          <div class="showcase-mipmaps">
+            <div class="showcase-mip-label">Mipmap Hierarchy (100% -> 50% -> 25% -> 12.5%):</div>
+            <div class="showcase-mip-strip">
+              <img src="assets/metal_grate_mip0.png" class="pixelated showcase-mip-0" title="Mip 0" alt="Mip 0" />
+              <img src="assets/metal_grate_mip1.png" class="pixelated showcase-mip-1" title="Mip 1" alt="Mip 1" />
+              <img src="assets/metal_grate_mip2.png" class="pixelated showcase-mip-2" title="Mip 2" alt="Mip 2" />
+              <img src="assets/metal_grate_mip3.png" class="pixelated showcase-mip-3" title="Mip 3" alt="Mip 3" />
             </div>
           </div>
         </div>
 
         <!-- Sample 3: Sci-Fi Panel -->
-        <div class="doc-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-            <strong style="color:#fff;">Sci-Fi Checker Panel</strong>
-            <span style="font-size:11px; color:var(--text-muted);">256x256 | High Frequency</span>
+        <div class="showcase-card">
+          <div class="showcase-header">
+            <h3 class="showcase-title">Sci-Fi Checker Panel</h3>
+            <span class="showcase-badge">256x256 | High Frequency</span>
           </div>
-          <p style="font-size:12px; margin-bottom:0.75rem;">Validates downsampling spatial filtering across 4 mip levels without aliasing noise.</p>
+          <p class="showcase-desc">Validates downsampling spatial filtering across 4 mip levels without aliasing noise.</p>
           
-          <div class="doc-grid-3" style="text-align:center; font-size:11px; margin-bottom:0.75rem;">
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">Original (24-bit)</span>
-              <img src="assets/sci_panel_orig.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+          <div class="showcase-diff-grid">
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">Original (24-bit)</span>
+              <div class="showcase-img-frame">
+                <img src="assets/sci_panel_orig.png" class="pixelated" alt="Sci-Fi Panel Original" />
+              </div>
             </div>
-            <div>
-              <span class="text-sky" style="display:block; margin-bottom:4px;">fastwad Dithered</span>
-              <img src="assets/sci_panel_dither.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid rgba(14, 165, 233, 0.4);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label highlight">fastwad (Dithered)</span>
+              <div class="showcase-img-frame highlight">
+                <img src="assets/sci_panel_dither.png" class="pixelated" alt="Sci-Fi Panel Dithered" />
+              </div>
             </div>
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">256-Color Palette</span>
-              <img src="assets/sci_panel_palette.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">256-Color Palette</span>
+              <div class="showcase-img-frame">
+                <img src="assets/sci_panel_palette.png" class="pixelated" alt="Sci-Fi Panel Palette" title="16x16 256-color palette" />
+              </div>
             </div>
           </div>
 
-          <div style="border-top:1px solid var(--border); padding-top:0.5rem; font-size:11px; color:var(--text-muted);">
-            <span style="display:block; margin-bottom:4px;">Mipmaps (100% &rarr; 50% &rarr; 25% &rarr; 12.5%):</span>
-            <div style="display:flex; align-items:flex-end; gap:6px; background:var(--bg-main); padding:6px; border-radius:4px;">
-              <img src="assets/sci_panel_mip0.png" class="pixelated" style="height:36px; border:1px solid var(--border);" title="Mip 0" />
-              <img src="assets/sci_panel_mip1.png" class="pixelated" style="height:27px; border:1px solid var(--border);" title="Mip 1" />
-              <img src="assets/sci_panel_mip2.png" class="pixelated" style="height:18px; border:1px solid var(--border);" title="Mip 2" />
-              <img src="assets/sci_panel_mip3.png" class="pixelated" style="height:10px; border:1px solid var(--border);" title="Mip 3" />
+          <div class="showcase-mipmaps">
+            <div class="showcase-mip-label">Mipmap Hierarchy (100% -> 50% -> 25% -> 12.5%):</div>
+            <div class="showcase-mip-strip">
+              <img src="assets/sci_panel_mip0.png" class="pixelated showcase-mip-0" title="Mip 0" alt="Mip 0" />
+              <img src="assets/sci_panel_mip1.png" class="pixelated showcase-mip-1" title="Mip 1" alt="Mip 1" />
+              <img src="assets/sci_panel_mip2.png" class="pixelated showcase-mip-2" title="Mip 2" alt="Mip 2" />
+              <img src="assets/sci_panel_mip3.png" class="pixelated showcase-mip-3" title="Mip 3" alt="Mip 3" />
             </div>
           </div>
         </div>
 
         <!-- Sample 4: Cyberpunk Plasma -->
-        <div class="doc-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-            <strong style="color:#fff;">Cyberpunk Plasma Waves</strong>
-            <span style="font-size:11px; color:var(--text-muted);">128x256 | Wide Gamut</span>
+        <div class="showcase-card">
+          <div class="showcase-header">
+            <h3 class="showcase-title">Cyberpunk Plasma Waves</h3>
+            <span class="showcase-badge">128x256 | Wide Gamut</span>
           </div>
-          <p style="font-size:12px; margin-bottom:0.75rem;">Continuous sinusoidal RGB waves verifying maximum 256-color gamut representation.</p>
+          <p class="showcase-desc">Continuous sinusoidal RGB waves verifying maximum 256-color gamut representation.</p>
           
-          <div class="doc-grid-3" style="text-align:center; font-size:11px; margin-bottom:0.75rem;">
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">Original (24-bit)</span>
-              <img src="assets/neon_cyber_orig.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+          <div class="showcase-diff-grid">
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">Original (24-bit)</span>
+              <div class="showcase-img-frame">
+                <img src="assets/neon_cyber_orig.png" class="pixelated" alt="Cyberpunk Plasma Original" />
+              </div>
             </div>
-            <div>
-              <span class="text-sky" style="display:block; margin-bottom:4px;">fastwad Dithered</span>
-              <img src="assets/neon_cyber_dither.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid rgba(14, 165, 233, 0.4);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label highlight">fastwad (Dithered)</span>
+              <div class="showcase-img-frame highlight">
+                <img src="assets/neon_cyber_dither.png" class="pixelated" alt="Cyberpunk Plasma Dithered" />
+              </div>
             </div>
-            <div>
-              <span style="color:var(--text-muted); display:block; margin-bottom:4px;">256-Color Palette</span>
-              <img src="assets/neon_cyber_palette.png" class="pixelated" style="width:100%; border-radius:4px; border:1px solid var(--border);" />
+            <div class="showcase-diff-col">
+              <span class="showcase-diff-label">256-Color Palette</span>
+              <div class="showcase-img-frame">
+                <img src="assets/neon_cyber_palette.png" class="pixelated" alt="Cyberpunk Plasma Palette" title="16x16 256-color palette" />
+              </div>
             </div>
           </div>
 
-          <div style="border-top:1px solid var(--border); padding-top:0.5rem; font-size:11px; color:var(--text-muted);">
-            <span style="display:block; margin-bottom:4px;">Mipmaps (100% &rarr; 50% &rarr; 25% &rarr; 12.5%):</span>
-            <div style="display:flex; align-items:flex-end; gap:6px; background:var(--bg-main); padding:6px; border-radius:4px;">
-              <img src="assets/neon_cyber_mip0.png" class="pixelated" style="height:36px; border:1px solid var(--border);" title="Mip 0" />
-              <img src="assets/neon_cyber_mip1.png" class="pixelated" style="height:27px; border:1px solid var(--border);" title="Mip 1" />
-              <img src="assets/neon_cyber_mip2.png" class="pixelated" style="height:18px; border:1px solid var(--border);" title="Mip 2" />
-              <img src="assets/neon_cyber_mip3.png" class="pixelated" style="height:10px; border:1px solid var(--border);" title="Mip 3" />
+          <div class="showcase-mipmaps">
+            <div class="showcase-mip-label">Mipmap Hierarchy (100% -> 50% -> 25% -> 12.5%):</div>
+            <div class="showcase-mip-strip">
+              <img src="assets/neon_cyber_mip0.png" class="pixelated showcase-mip-0" title="Mip 0" alt="Mip 0" />
+              <img src="assets/neon_cyber_mip1.png" class="pixelated showcase-mip-1" title="Mip 1" alt="Mip 1" />
+              <img src="assets/neon_cyber_mip2.png" class="pixelated showcase-mip-2" title="Mip 2" alt="Mip 2" />
+              <img src="assets/neon_cyber_mip3.png" class="pixelated showcase-mip-3" title="Mip 3" alt="Mip 3" />
             </div>
           </div>
         </div>
+
       </div>
     </section>
 
@@ -327,21 +352,21 @@
          ======================================================================= -->
     <section id="quickstart" class="doc-section">
       <h2>Quickstart Integration</h2>
-      <p style="margin-bottom:1rem;">Build and extract WAD archives using command-line pipelines or mapping tools.</p>
+      <p class="mb-md">Build and extract WAD archives using command-line pipelines or mapping tools.</p>
       
-      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+      <div class="quickstart-list">
         <div class="doc-card">
-          <span style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">1. Compile textures into GoldSrc WAD3</span>
+          <span class="field-label">1. Compile textures into GoldSrc WAD3</span>
           <code class="text-emerald">fastwad build ./textures ./halflife.wad --json</code>
         </div>
         
         <div class="doc-card">
-          <span style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">2. Inspect lump offsets and dimensions</span>
+          <span class="field-label">2. Inspect lump offsets and dimensions</span>
           <code class="text-cyan">fastwad list ./halflife.wad --json | jq .lumps[].name</code>
         </div>
 
         <div class="doc-card">
-          <span style="color:var(--text-muted); display:block; margin-bottom:4px; font-size:11px;">3. Extract textures to PNG/BMP files</span>
+          <span class="field-label">3. Extract textures to PNG/BMP files</span>
           <code class="text-amber">fastwad extract ./halflife.wad ./extracted --json</code>
         </div>
       </div>
@@ -352,12 +377,12 @@
          ======================================================================= -->
     <section id="sdk" class="doc-section">
       <h2>Embeddable C++17 Header SDK</h2>
-      <p style="margin-bottom:1rem;">Include <code>fastwad/fastwad.hpp</code> directly in your C++ applications for in-memory buffer operations.</p>
+      <p class="mb-md">Include <code>fastwad/fastwad.hpp</code> directly in your C++ applications for in-memory buffer operations.</p>
 
       <div class="editor-box">
         <div class="editor-header">
-          <span style="color:#fff; font-weight:bold;">fastwad/fastwad.hpp</span>
-          <span style="color:var(--text-muted);">C++17 Standalone Header</span>
+          <span class="editor-title">fastwad/fastwad.hpp</span>
+          <span class="editor-subtitle">C++17 Standalone Header</span>
         </div>
         <pre><code class="text-emerald">#include &lt;fastwad/fastwad.hpp&gt;
 #include &lt;iostream&gt;
@@ -384,7 +409,7 @@ int main() {
     <!-- =======================================================================
          7. OPTION & API REFERENCE
          ======================================================================= -->
-    <section id="reference" class="doc-section" style="border-bottom:none;">
+    <section id="reference" class="doc-section">
       <h2>CLI Options & Flags Reference</h2>
 
       <table class="table-ref">
@@ -398,49 +423,49 @@ int main() {
         </thead>
         <tbody>
           <tr>
-            <td style="color:#fff; font-weight:bold;">--json</td>
+            <td class="text-white font-bold">--json</td>
             <td><code>false</code></td>
             <td><code class="text-emerald">flag</code></td>
             <td>Outputs structured JSON metrics to <code>stdout</code> for tooling scripts.</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">wad2=true</td>
+            <td class="text-white font-bold">wad2=true</td>
             <td><code>false</code></td>
             <td><code class="text-cyan">bool</code></td>
             <td>Generates Quake 1 WAD2 format instead of GoldSrc WAD3.</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">disable_dither=true</td>
+            <td class="text-white font-bold">disable_dither=true</td>
             <td><code>false</code></td>
             <td><code class="text-amber">bool</code></td>
             <td>Disables Floyd-Steinberg error diffusion dithering.</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">max_size=512</td>
+            <td class="text-white font-bold">max_size=512</td>
             <td><code>256</code></td>
             <td><code class="text-sky">integer</code></td>
             <td>Max texture bounding box (256, 512, 1024).</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">align=center</td>
+            <td class="text-white font-bold">align=center</td>
             <td><code>center</code></td>
             <td><code class="text-muted">string</code></td>
             <td>Padding alignment: <code>center</code>, <code>top</code>, <code>bottom</code>, <code>left</code>, <code>right</code>.</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">stretch=true</td>
+            <td class="text-white font-bold">stretch=true</td>
             <td><code>false</code></td>
             <td><code class="text-rose">bool</code></td>
             <td>Forces stretch to <code>max_size</code> instead of aspect containment.</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">pad_r, pad_g, pad_b</td>
+            <td class="text-white font-bold">pad_r, pad_g, pad_b</td>
             <td><code>0 0 255</code></td>
             <td><code class="text-indigo">RGB (0-255)</code></td>
             <td>RGB value for padding and transparency key color (index 255).</td>
           </tr>
           <tr>
-            <td style="color:#fff; font-weight:bold;">format=bmp</td>
+            <td class="text-white font-bold">format=bmp</td>
             <td><code>png</code></td>
             <td><code class="text-muted">string</code></td>
             <td>Extraction image format (<code>png</code> or <code>bmp</code>).</td>
@@ -454,9 +479,9 @@ int main() {
   <!-- =========================================================================
        8. FOOTER
        ========================================================================= -->
-  <footer style="border-top:1px solid var(--border); padding:1.5rem 0; text-align:center; font-size:12px; color:var(--text-muted);">
+  <footer class="doc-footer">
     <div class="doc-container">
-      <p>fastwad • MIT License • Created by <a href="https://github.com/urgorri" target="_blank" style="color:#fff;">urgorri</a></p>
+      <p>fastwad • MIT License • Created by <a href="https://github.com/urgorri" target="_blank" class="text-white">urgorri</a></p>
     </div>
   </footer>
 

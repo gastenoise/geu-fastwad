@@ -254,8 +254,15 @@ bool ImageProcessor::ProcessBuffer(const uint8_t* buffer, size_t size, const std
     uint8_t* raw = stbi_load_from_memory(buffer, (int)size, &orig_w, &orig_h, &channels, 4);
     if (!raw) return false;
 
-    int max_s = config.max_size;
-    float aspect = (float)orig_w / (float)orig_h;
+    // Security bounds check for corrupt dimensions or image decompression bombs
+    if (orig_w <= 0 || orig_h <= 0 || orig_w > 8192 || orig_h > 8192) {
+        stbi_image_free(raw);
+        if (!config.quiet) std::cerr << "Warn: Image dimensions exceed allowed limit (8192x8192): " << internal_name << "\n";
+        return false;
+    }
+
+    int max_s = std::clamp(config.max_size, 16, 4096);
+    float aspect = (float)orig_w / (float)std::max(1, orig_h);
     
     int fit_w = orig_w, fit_h = orig_h;
     if (fit_w > max_s || fit_h > max_s) {

@@ -207,6 +207,14 @@ ctest --test-dir build -C Release --output-on-failure
 
 ---
 
+## Community & Contributing
+
+- **Contributing**: Check out our [Contributing Guidelines](CONTRIBUTING.md) to set up your development environment and submit pull requests.
+- **Security**: For reporting security vulnerabilities, please review our [Security Policy](SECURITY.md).
+- **Code of Conduct**: All participants are expected to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
 ## License
 
-`fastwad` is released under the **MIT License**. Third-party libraries (`stb_image`, `stb_image_resize2`, `stb_image_write`) are in the Public Domain / MIT License.
+`fastwad` is released under the **MIT License** — see [LICENSE](LICENSE) for details. Vendored STB single-header libraries (`stb_image`, `stb_image_resize2`, `stb_image_write`) are in the Public Domain / MIT License.

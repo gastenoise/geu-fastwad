@@ -293,7 +293,7 @@ void GenerateShowcase(const std::string& output_dir) {
 
     std::vector<ShowcaseSample> samples = {
         {"gradient_sky", "Gradient Skybox", "Smooth 24-bit multi-channel gradient testing K-Means quantization & Floyd-Steinberg dithering.", 256, 128, 0},
-        {"metal_grate", "{Grate Cutout", "Transparent metal grate verifying alpha channel mapping to key blue and index 255.", 128, 128, 1},
+        {"metal_grate", "{Chainlink Fence", "Chainlink wire texture with alpha transparency testing cutout quantization and GoldSrc key-blue mapping.", 128, 128, 1},
         {"sci_panel", "Sci-Fi High Contrast", "High-frequency checker and neon patterns testing spatial mipmap downsampling.", 256, 256, 2},
         {"neon_cyber", "Cyberpunk Plasma", "Continuous sinusoidal color waves testing palette range and gamut coverage.", 128, 256, 3}
     };
@@ -320,7 +320,31 @@ void GenerateShowcase(const std::string& output_dir) {
 
     for (const auto& s : samples) {
         fs::path orig_path = assets_dir / (s.id + "_orig.png");
-        CreateSyntheticImage(orig_path.string(), s.width, s.height, (s.pattern == 1 ? 4 : 3), s.pattern);
+
+        if (s.id == "metal_grate") {
+            bool loaded = false;
+            std::vector<fs::path> candidates = {
+                "texture.png",
+                "res/texture.png",
+                "../res/texture.png",
+                "../../res/texture.png"
+            };
+            for (const auto& cand : candidates) {
+                if (fs::exists(cand)) {
+                    std::error_code ec_cp;
+                    fs::copy_file(cand, orig_path, fs::copy_options::overwrite_existing, ec_cp);
+                    if (!ec_cp) {
+                        loaded = true;
+                        break;
+                    }
+                }
+            }
+            if (!loaded) {
+                CreateSyntheticImage(orig_path.string(), s.width, s.height, 4, s.pattern);
+            }
+        } else {
+            CreateSyntheticImage(orig_path.string(), s.width, s.height, (s.pattern == 1 ? 4 : 3), s.pattern);
+        }
 
         AppConfig cfg_dither;
         cfg_dither.disable_dither = false;

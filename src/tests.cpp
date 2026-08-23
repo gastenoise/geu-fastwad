@@ -385,11 +385,11 @@ void GenerateShowcase(const std::string& output_dir) {
     }
 
     double avg_ms = total_ms / samples.size();
-    double throughput = 1000.0 / avg_ms;
-
-    // Generate static HTML report
-    std::ofstream html(root / "index.html");
-    html << "<!DOCTYPE html>\n"
+    double throughput = (avg_ms > 0.0) ? (1000.0 / avg_ms) : 0.0;
+    // If an index.html does not already exist in the target directory, generate a standalone HTML report
+    if (!fs::exists(root / "index.html")) {
+        std::ofstream html(root / "index.html");
+        html << "<!DOCTYPE html>\n"
          << "<html lang=\"en\" class=\"dark\">\n"
          << "<head>\n"
          << "  <meta charset=\"UTF-8\">\n"
@@ -529,9 +529,9 @@ void GenerateShowcase(const std::string& output_dir) {
          << "  </footer>\n"
          << "</body>\n"
          << "</html>\n";
-
-    html.close();
-    std::cout << "\n>>> Visual Showcase generated successfully at: " << (root / "index.html").string() << " <<<\n\n";
+        html.close();
+    }
+    std::cout << "\n>>> Visual Showcase assets generated successfully in: " << (root / "assets").string() << " <<<\n\n";
 }
 
 int main(int argc, char** argv) {
